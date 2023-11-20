@@ -6,7 +6,7 @@ from tp import Ui_MainWindow
 
 chapitre = 1
 livre_id = 1
-id_sauvegarde = 1
+id_sauvegarde = 0
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, *args, obj=None, **kwargs):
         super(MainWindow, self).__init__(*args, **kwargs)
