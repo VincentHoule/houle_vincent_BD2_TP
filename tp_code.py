@@ -17,7 +17,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.pushButton_sauvegarder.clicked.connect(self._sauvegarder_personnage)
         self.pushButton_chapitre.clicked.connect(self._changement_chapitre)
         self.pushButton_charger.clicked.connect(self._charger_personnage)
-
+        self.pushButton_supprimer.clicked.connect(self._supprimer_sauvegarde)
         self._prologue(livre_id)
         self._afficher_arme()
         self._afficher_kai()
@@ -37,7 +37,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             nom = self.lineEdit_nom.text()
 
             param={'nom': nom}
-            requete = "INSERT INTO personnage (nom) VALUES (%(nom)s);"
+            requete = "INSERT INTO personnage (nom, chapitre) VALUES (%(nom)s, 1);"
             print("creer")
             cursor.execute(requete, param)
 
@@ -59,6 +59,35 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self._change_kai()
             self._prologue(livre_id)
 
+    def _supprimer_sauvegarde(self):
+        try:
+            global id_sauvegarde
+            print(id_sauvegarde)
+            cnx = mysql.connector.connect(
+                user="aventurier",
+                password="dnd",
+                host="localhost",
+                database='tp_livre'
+            )
+            cursor = cnx.cursor(dictionary=True)
+            
+            param={'id': id_sauvegarde}
+            requete="DELETE FROM arme_personnage WHERE id_personnage = %(id)s;"
+            cursor.execute(requete, param)
+            requete="DELETE FROM discipline_personnage WHERE id_personnage = %(id)s;"
+            cursor.execute(requete, param)
+            requete="DELETE FROM personnage WHERE id = %(id)s;"
+            cursor.execute(requete, param)
+
+
+        except mysql.connector.Error as erreur:
+            print(erreur)
+            
+        finally:
+            cnx.commit()
+            cursor.close()
+            cnx.close()
+            self._les_sauvegarde()
     def _sauvegarder_personnage(self):
         try:
             global chapitre
@@ -118,51 +147,52 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             cursor = cnx.cursor(dictionary=True)
             
             id_charge = int(self.comboBox_charger.currentText())
-            
-            param = {'id_personnage': id_charge , 'id_chapitre': chapitre}
-            requete = "SELECT * FROM personnage WHERE id = %(id_personnage)s;"
-            cursor.execute(requete, param)
+            print(id_charge)
+            if isinstance(id_charge, int):
+                param = {'id_personnage': id_charge , 'id_chapitre': chapitre}
+                requete = "SELECT * FROM personnage WHERE id = %(id_personnage)s;"
+                cursor.execute(requete, param)
 
-            value = cursor.fetchone()
+                value = cursor.fetchone()
 
-            self.lineEdit_nom.setText(value['nom'])
-            self.lineEdit_argent.setText(str(value['argent']))
+                self.lineEdit_nom.setText(value['nom'])
+                self.lineEdit_argent.setText(str(value['argent']))
 
-            self.spinBox_habilite.setValue(value['habilite'])
-            self.spinBox_endurance.setValue(value['endurance'])
-            self.textEdit_repas.setPlainText(value['repas']) 
-            self.textEdit_speciaux.setPlainText(value['objet_speciaux'])
-            self.textEdit_equipement.setPlainText(value['equipement'])
+                self.spinBox_habilite.setValue(value['habilite'])
+                self.spinBox_endurance.setValue(value['endurance'])
+                self.textEdit_repas.setPlainText(value['repas']) 
+                self.textEdit_speciaux.setPlainText(value['objet_speciaux'])
+                self.textEdit_equipement.setPlainText(value['equipement'])
 
-            id_sauvegarde = value['id']
-            chapitre = value['chapitre']
-            print(chapitre)
-            param = {'id_personnage': id_charge , 'id_chapitre': chapitre}
-            requete = "SELECT * FROM chapitre INNER JOIN chapitre_livre ON id_chapitre = id WHERE id_chapitre = %(id_chapitre)s; "
-            cursor.execute(requete, param)
-            
-            value = cursor.fetchone()
+                id_sauvegarde = value['id']
+                chapitre = value['chapitre']
+                print(chapitre)
+                param = {'id_personnage': id_charge , 'id_chapitre': chapitre}
+                requete = "SELECT * FROM chapitre INNER JOIN chapitre_livre ON id_chapitre = id WHERE id_chapitre = %(id_chapitre)s; "
+                cursor.execute(requete, param)
+                
+                value = cursor.fetchone()
 
-            self.label_chapitre.setText(str(value['no_chapitre']))
-            self.plainTextEdit_chapitre.setPlainText(value['texte'])
-            self._combox_navigation() 
+                self.label_chapitre.setText(str(value['no_chapitre']))
+                self.plainTextEdit_chapitre.setPlainText(value['texte'])
+                self._combox_navigation() 
 
-            requete = "SELECT id FROM arme INNER JOIN arme_personnage ON id_arme = id WHERE id_personnage = %(id_personnage)s;"
-            cursor.execute(requete, param)
+                requete = "SELECT id FROM arme INNER JOIN arme_personnage ON id_arme = id WHERE id_personnage = %(id_personnage)s;"
+                cursor.execute(requete, param)
 
-            id_arme = cursor.fetchall()
-            self.comboBox_arme_1.setCurrentIndex(id_arme[0]['id'] -1)
-            self.comboBox__arme_2.setCurrentIndex(id_arme[1]['id'] -1)
+                id_arme = cursor.fetchall()
+                self.comboBox_arme_1.setCurrentIndex(id_arme[0]['id'] -1)
+                self.comboBox__arme_2.setCurrentIndex(id_arme[1]['id'] -1)
 
-            requete = "SELECT id FROM discipline INNER JOIN discipline_personnage ON id_discipline = id WHERE id_personnage = %(id_personnage)s;"
-            cursor.execute(requete, param)
+                requete = "SELECT id FROM discipline INNER JOIN discipline_personnage ON id_discipline = id WHERE id_personnage = %(id_personnage)s;"
+                cursor.execute(requete, param)
 
-            id_kai = cursor.fetchall()
-            self.comboBox_kai_1.setCurrentIndex(id_kai[0]['id'] -1)
-            self.comboBox_kai_2.setCurrentIndex(id_kai[1]['id'] -1)
-            self.comboBox_kai_3.setCurrentIndex(id_kai[2]['id'] -1)
-            self.comboBox_kai_4.setCurrentIndex(id_kai[3]['id'] -1)
-            self.comboBox_kai_5.setCurrentIndex(id_kai[4]['id'] -1)
+                id_kai = cursor.fetchall()
+                self.comboBox_kai_1.setCurrentIndex(id_kai[0]['id'] -1)
+                self.comboBox_kai_2.setCurrentIndex(id_kai[1]['id'] -1)
+                self.comboBox_kai_3.setCurrentIndex(id_kai[2]['id'] -1)
+                self.comboBox_kai_4.setCurrentIndex(id_kai[3]['id'] -1)
+                self.comboBox_kai_5.setCurrentIndex(id_kai[4]['id'] -1)
 
         except mysql.connector.Error as erreur:
             print(erreur)

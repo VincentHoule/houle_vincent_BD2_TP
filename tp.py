@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1059, 894)
+        MainWindow.resize(1063, 903)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.pushButton_creer = QtWidgets.QPushButton(self.centralwidget)
@@ -142,9 +142,12 @@ class Ui_MainWindow(object):
         self.pushButton_chapitre = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_chapitre.setGeometry(QtCore.QRect(400, 800, 131, 28))
         self.pushButton_chapitre.setObjectName("pushButton_chapitre")
+        self.pushButton_supprimer = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_supprimer.setGeometry(QtCore.QRect(10, 170, 93, 28))
+        self.pushButton_supprimer.setObjectName("pushButton_supprimer")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1059, 26))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1063, 26))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -173,3 +176,4 @@ class Ui_MainWindow(object):
         self.label_6.setText(_translate("MainWindow", "Arme"))
         self.pushButton_charger.setText(_translate("MainWindow", "Charger"))
         self.pushButton_chapitre.setText(_translate("MainWindow", "Prochain Chapitre"))
+        self.pushButton_supprimer.setText(_translate("MainWindow", "Supprimer"))

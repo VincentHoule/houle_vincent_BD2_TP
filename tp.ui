@@ -306,6 +306,19 @@
      <string>Prochain Chapitre</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton_supprimer">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>170</y>
+      <width>93</width>
+      <height>28</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Supprimer</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -313,7 +326,7 @@
      <x>0</x>
      <y>0</y>
      <width>1063</width>
-     <height>21</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>
